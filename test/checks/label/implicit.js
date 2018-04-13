@@ -65,15 +65,4 @@ describe('implicit-label', function () {
 		'<input id="target" type="text" />');
 		assert.isFalse(checks['implicit-label'].evaluate.apply(checkContext, params));
 	});
-
-	it('should return false if input is aria-labelled only by select options', function () {
-		var params = checkSetup('<label for="target">' +
-			'<select id="select">' +
-			'	<option selected="selected">Chosen</option>' +
-			'	<option>Not Selected</option>' +
-			'</select>' +
-		'</label>' +
-		'<input aria-labelledby="select" type="text" id="target" />');
-		assert.isFalse(checks['implicit-label'].evaluate.apply(checkContext, params));
-	});
 });

@@ -3,9 +3,12 @@ describe('aria-labelledby', function () {
 
 	var fixture = document.getElementById('fixture');
 	var fixtureSetup = axe.testUtils.fixtureSetup;
+	var checkSetup = axe.testUtils.checkSetup;
+	var checkContext = axe.testUtils.MockCheckContext();
 
 	afterEach(function () {
 		fixture.innerHTML = '';
+		checkContext.reset();
 	});
 
 	it('should return true if an aria-labelledby and its target is present', function () {
@@ -49,6 +52,17 @@ describe('aria-labelledby', function () {
 		fixtureSetup(target);
 
 		assert.isTrue(checks['aria-labelledby'].evaluate(node));
+	});
+
+	it('should return true if input is aria-labelled by select options', function () {
+		var params = checkSetup('<label>' +
+			'<select id="select">' +
+			'	<option selected="selected">Chosen</option>' +
+			'	<option>Not Selected</option>' +
+			'</select>' +
+		'</label>' +
+		'<input aria-labelledby="select" type="text" id="target" />');
+		assert.isTrue(checks['aria-labelledby'].evaluate.apply(checkContext, params));
 	});
 
 	it('should return true if an aria-labelledby is present, but references elements with aria-hidden=true', function () {

@@ -2,11 +2,14 @@ describe('explicit-label', function () {
 	'use strict';
 
 	var fixture = document.getElementById('fixture');
+	var checkSetup = axe.testUtils.checkSetup;
+	var checkContext = axe.testUtils.MockCheckContext();
 	var fixtureSetup = axe.testUtils.fixtureSetup;
 	var shadowSupport = axe.testUtils.shadowSupport;
 
 	afterEach(function () {
 		fixture.innerHTML = '';
+		checkContext.reset();
 	});
 
 	it('should return false if an empty label is present', function () {
@@ -33,6 +36,30 @@ describe('explicit-label', function () {
 		fixtureSetup(node);
 
 		assert.isFalse(checks['explicit-label'].evaluate(node));
+	});
+
+	it('should return false if input is labeled only by select options', function () {
+		var params = checkSetup('<label for="target">' +
+			'<select id="select">' +
+			'	<option selected="selected">Chosen</option>' +
+			'	<option>Not Selected</option>' +
+			'</select>' +
+		'</label>' +
+		'<input id="target" type="text" />');
+		var result = checks['explicit-label'].evaluate.apply(checkContext, params);
+		assert.isFalse(result);
+	});
+
+	it('should return true if input is labeled by labeled select', function () {
+		var params = checkSetup('<label for="select">My Select</label>' +
+		'<label for="target">' +
+			'<select id="select">' +
+			'	<option selected="selected">Chosen</option>' +
+			'	<option>Not Selected</option>' +
+			'</select>' +
+		'</label>' +
+		'<input id="target" type="text" />');
+		assert.isTrue(checks['explicit-label'].evaluate.apply(checkContext, params));
 	});
 
 	(shadowSupport.v1 ? it : xit)('should return true if input and label are in the same shadow root', function () {
